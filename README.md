@@ -8,11 +8,13 @@ AMC演習室PCを管理するためのスクリプトなどを置いていくリ
   
 # よく使う （コピペ用）
 
+```
 ## DeepFreeze解除
 /Library/Zool/sbin/df_disable.sh
 
 ## DeepFreeze保護
 /Library/Zool/sbin/df_enable.sh
+```
 
 # テクニック
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ytr0/setup/main/AllowFullDiskAccessTerminal.sh)"
