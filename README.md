@@ -8,12 +8,12 @@ AMC演習室PCを管理するためのスクリプトなどを置いていくリ
   
 # よく使う （コピペ用）
 
-## DeepFreeze解除
+#### DeepFreeze解除
 ```
 /Library/Zool/sbin/df_disable.sh
 ```
 
-## DeepFreeze保護 
+#### DeepFreeze保護 
 ```
 /Library/Zool/sbin/df_enable.sh
 ```
