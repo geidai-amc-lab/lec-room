@@ -30,7 +30,8 @@ mv /Users/admin/Documents/Max\\ 8/Packages/spat5 "/Users/admin/Documents/Max 8/P
 
 # テクニック
 ```
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ytr0/setup/main/AllowFullDiskAccessTerminal.sh)"
+sh -c "$(curl -fsSl https://raw.githubusercontent.com/ytr0/setup/main/AllowAccess.sh
+)"
 ```
 ```
 USER=""
