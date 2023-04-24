@@ -32,3 +32,20 @@ mv /Users/admin/Documents/Max\\ 8/Packages/spat5 "/Users/admin/Documents/Max 8/P
 ```
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ytr0/setup/main/AllowFullDiskAccessTerminal.sh)"
 ```
+```
+USER=""
+PASS=""
+
+osascript <<EOF
+tell application "System Events"
+  keystroke "${USER}"
+  keystroke tab
+  delay 0.5
+  keystroke "${PASS}"
+  delay 0.5
+  keystroke return
+end tell
+EOF
+```
+
+
