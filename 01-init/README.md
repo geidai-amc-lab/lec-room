@@ -6,6 +6,15 @@
 
 ```
 mkdir /Users/amc-scripts
+uri="https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init"
+target="/Users/amc-scripts"
+
+curl -fsSL $uri/amcmac-init.sh --output $target/amcmac-init.sh
+curl -fsSL $uri/amcmac-init.sh --output $target/add-login-item.sh
+```
+
+```
+mkdir /Users/amc-scripts
 
 curl -fsSL https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init/amcmac-init.sh --output /Users/amc-scripts/amcmac-init.sh
 curl -fsSL https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init/add-login-item.sh --output /Users/amc-scripts/add-login-item.sh
