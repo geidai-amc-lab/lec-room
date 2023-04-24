@@ -1,7 +1,10 @@
-mkdir /Users/amc-scripts
-uri="https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init"
 target="/Users/amc-scripts"
+resource="https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init"
+
+mkdir $target
 chmod u+w $target
 
-curl -fsSL $uri/amcmac-init.sh --output $target/amcmac-init.sh
-curl -fsSL $uri/amcmac-init.sh --output $target/add-login-item.sh
+curl -fsSL $resource/amcmac-init.sh --output $target/amcmac-init.sh
+curl -fsSL $resource/add-login-item.sh --output $target/add-login-item.sh
+
+sh $target/add-login-item.sh $target/amcmac-init.sh
