@@ -6,13 +6,16 @@ computer_name=$(scutil --get ComputerName)
 show_dialog() {
 osascript << EOF
 on run
-tell app "System Events" to display dialog "[$computer_name] $SSIDに接続しました" buttons {"OK"} default button "OK" giving up after 2
+set computer_name to do shell script "scutil --get ComputerName" as text
+set dialog_text to "[$computer_name] " & "$SSID" & "に接続しました" as text
+tell app "System Events" to display dialog dialog_text buttons {"OK"} default button "OK" giving up after 2
 end run
 EOF
 }
 
+
 # mount shared drive
-run_osascript() {
+mount_shared() {
 osascript << EOF
 on run
 tell application "Finder"
@@ -31,4 +34,4 @@ EOF
 }
 
 show_dialog
-run_osascript
+mount_shared
