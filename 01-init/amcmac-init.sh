@@ -20,7 +20,7 @@ for i in {1..20}; do
   if /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | grep -q " SSID: $SSID"; then
   echo $SSID"に接続しました。"
   # afplay /System/Library/Sounds/Basso.aiff
-  sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/develop/01-init/amcmac-remote-init.sh
+  sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init/amcmac-remote-init.sh
 )"
 
     exit 0
