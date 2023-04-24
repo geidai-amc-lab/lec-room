@@ -15,7 +15,7 @@ EOF
 
 
 # mount shared drive
-run_osascript() {
+mount_shared() {
 osascript << EOF
 on run
 tell application "Finder"
@@ -34,4 +34,4 @@ EOF
 }
 
 show_dialog
-run_osascript
+mount_shared
