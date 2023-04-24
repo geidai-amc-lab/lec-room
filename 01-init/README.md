@@ -1,8 +1,8 @@
-# 起動時スクリプト
+# ログイン時実行スクリプト
 
 
 
-#### Setup
+#### How to setup
 
 ```
 mkdir /Users/amc-scripts
@@ -22,6 +22,7 @@ curl -fsSL https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-ini
 sh /Users/amc-scripts/add-login-item.sh /Users/amc-scripts/amcmac-init.sh
 ```
 
+#### How to confirm
 ```
 USER=""
 PASS=""
