@@ -4,14 +4,13 @@ SSID=$( /System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport
 computer_name=$(scutil --get ComputerName)
 
 show_dialog() {
-osascript << EOF
-    on run
-        set computer_name to do shell script "scutil --get ComputerName" as text
-        set dialog_text to "[$computer_name] " & "$SSID" & "に接続しました"
-        tell app "System Events" to display dialog dialog_text buttons {"OK"} default button "OK" giving up after 2
-    end run
-EOF
+osascript -e 'on run
+set computer_name to do shell script "scutil --get ComputerName" as text
+set dialog_text to "['"$computer_name"'] '"$SSID"'に接続しました"
+tell app "System Events" to display dialog dialog_text buttons {"OK"} default button "OK" giving up after 2
+end run' > /dev/null
 }
+
 
 
 # mount shared drive
