@@ -35,6 +35,7 @@ EOF
 }
 
 main() {
+    afplay /System/Library/Sounds/Blow.aiff
     show_dialog
     mount_shared
 }
