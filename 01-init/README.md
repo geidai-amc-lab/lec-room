@@ -15,6 +15,18 @@ sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/de
 )"
 ```
 
+#### Test Remote Script
+main
+```
+sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init/amcmac-remote-init.sh
+)"
+```
+develop
+```
+sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/develop/01-init/amcmac-remote-init.sh
+)"
+```
+
 #### How to confirm
 ```
 USER=""
@@ -30,16 +42,4 @@ tell application "System Events"
   keystroke return
 end tell
 EOF
-```
-
-#### Test Remote Script
-main
-```
-sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init/amcmac-remote-init.sh
-)"
-```
-develop
-```
-sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/develop/01-init/amcmac-remote-init.sh
-)"
 ```
