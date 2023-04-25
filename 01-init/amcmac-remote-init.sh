@@ -33,5 +33,9 @@ end run
 EOF
 }
 
-show_dialog
-mount_shared
+main() {
+    show_dialog
+    mount_shared
+}
+
+main
