@@ -1,11 +1,20 @@
-target="/Users/amc-scripts"
+#!/bin/bash
+
+# スクリプト名のリスト
+scripts=("amcmac-init.sh" "add-login-item.sh" "openLaunchAgents.command")
+
+# リソースのURLとインストール先ディレクトリの定義
 resource="https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init"
+install_dir="/Users/amc-scripts"
 
-mkdir $target
-chmod u+w $target
+# インストール先ディレクトリを作成し、書き込み権限を付与
+mkdir -p "$install_dir"
+chmod u+w "$install_dir"
 
-curl -fsSL $resource/amcmac-init.sh --output $target/amcmac-init.sh
-curl -fsSL $resource/add-login-item.sh --output $target/add-login-item.sh
-curl -fsSL $resource/openLaunchAgents.command --output $target/openLaunchAgents.command
+# スクリプトをダウンロードしてインストール先ディレクトリに保存
+for script in "${scripts[@]}"; do
+  curl -fsSL "$resource/$script" --output "$install_dir/$script"
+done
 
-sh $target/add-login-item.sh $target/amcmac-init.sh
+# add-login-item.shを実行してamcmac-init.shをログインアイテムに追加
+sh "$install_dir/add-login-item.sh" "$install_dir/amcmac-init.sh"

@@ -2,10 +2,28 @@
 
 
 
-#### How to setup
+#### Installation
 
+main
 ```
 sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init/_setup.sh
+)"
+```
+develop
+```
+sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/develop/01-init/_setup.sh
+)"
+```
+
+#### Test Remote Script
+main
+```
+sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init/amcmac-remote-init.sh
+)"
+```
+develop
+```
+sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/develop/01-init/amcmac-remote-init.sh
 )"
 ```
 
@@ -24,16 +42,4 @@ tell application "System Events"
   keystroke return
 end tell
 EOF
-```
-
-#### Test Remote Script
-main
-```
-sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init/amcmac-remote-init.sh
-)"
-```
-develop
-```
-sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/develop/01-init/amcmac-remote-init.sh
-)"
 ```
