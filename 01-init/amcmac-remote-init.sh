@@ -1,6 +1,6 @@
 #!/bin/bash
 
-afplay /System/Library/Sounds/B.aiff
+afplay /System/Library/Sounds/Blow.aiff
 SSID=$( /System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport -I  | awk -F' SSID: '  '/ SSID: / {print $2}' )
 computer_name=$(scutil --get ComputerName)
 
@@ -35,7 +35,6 @@ EOF
 }
 
 main() {
-    afplay /System/Library/Sounds/Blow.aiff
     show_dialog
     mount_shared
 }
