@@ -2,10 +2,16 @@
 
 
 
-#### How to setup
+#### Installation
 
+main
 ```
 sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init/_setup.sh
+)"
+```
+develop
+```
+sh -c "$(curl -fsSl https://raw.githubusercontent.com/geidai-amc-lab/lec-room/develop/01-init/_setup.sh
 )"
 ```
 
