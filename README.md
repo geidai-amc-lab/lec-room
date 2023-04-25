@@ -3,7 +3,7 @@ AMC演習室PCを管理するためのスクリプトなどを置いていくリ
 
 # 運用方針
 - このリポジトリにはpublicにしてよいものだけを置く。
-  - パスワードが記載されたファイルをアップロードしない。（.gitignoreする）
+  - パスワードやAPI keyが記載されたファイルをアップロードしない。（.gitignoreする）
   - ネットワーク構成などが類推できそうなものは出来るだけ置かない。
   
 # よく使う （コピペ用）
@@ -72,6 +72,17 @@ EOF
 }
 
 run_osascript
+```
+
+ダウンロード
+```
+target="/Users/amc-scripts"
+resource="https://raw.githubusercontent.com/geidai-amc-lab/lec-room/main/01-init"
+
+mkdir $target
+chmod u+w $target
+
+curl -fsSL $resource/amcmac-init.sh --output $target/amcmac-init.sh
 ```
 
 
