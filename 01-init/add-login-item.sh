@@ -10,8 +10,6 @@ chmod +x $script_path
 # パスからファイル名を取得し、拡張子を除いたファイル名をscript_nameとする
 script_name="$(basename "$script_path" | sed 's/\.[^.]*$//')"
 
-cd /
-
 # ログイン項目に追加するためのプロパティリストを作成する
 plist_path="/Library/LaunchAgents/com.$script_name.plist"
 cat > "$plist_path" << EOF
