@@ -26,7 +26,7 @@ echo -e "[default]\nsigning_required=no" | sudo tee /Library/Preferences/nsmb.co
 
 #### ファイル移動
 ```
-mv /Users/admin/Documents/Max\\ 8/Packages/spat5 "/Users/admin/Documents/Max 8/Packages/"
+mv "/Users/admin/Documents/Max\\ 8/Packages/"* "/Users/autologin/Documents/Max 8/Packages/"
 ```
 
 # テクニック
