@@ -2,6 +2,9 @@
 
 afplay /System/Library/Sounds/Blow.aiff
 
+# turn and keep display ON for a while
+caffeinate -d -u -t 600
+
 # press Enter key for turning display ON
 press_enter() {
 osascript << EOF
@@ -10,9 +13,8 @@ on run
         keystroke return
         delay 0.5
         keystroke return
-        delay 0.5
+        delay 1
         keystroke return
-        delay 0.5
     end tell
 end run
 EOF
