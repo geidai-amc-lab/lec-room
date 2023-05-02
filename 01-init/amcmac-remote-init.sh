@@ -14,20 +14,6 @@ on run
 end run
 EOF
 
-# press Enter key for turning display ON
-press_enter() {
-osascript << EOF
-on run
-    tell application "System Events"
-        keystroke return
-        delay 0.5
-        keystroke return
-        delay 1
-        keystroke return
-    end tell
-end run
-EOF
-}
 
 SSID=$( /System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport -I  | awk -F' SSID: '  '/ SSID: / {print $2}' )
 computer_name=$(scutil --get ComputerName)
@@ -65,7 +51,12 @@ EOF
 main() {
     press_enter
     show_dialog
-    mount_shared
+    if [ -d "/Volumes/shared" ]; then
+    echo "/Volumes/shared exists"
+    else
+        echo "/Volumes/shared does not exist"
+        mount_shared
+    fi
 }
 
 main
