@@ -11,12 +11,16 @@ AMC演習室PCを管理するためのスクリプトなどを置いていくリ
 #### DeepFreeze解除
 ```
 /Library/Zool/sbin/df_disable.sh
-reboot
 ```
 
 #### DeepFreeze保護 
 ```
 /Library/Zool/sbin/df_enable.sh
+```
+
+```
+sudo dscl . delete /Users/autologin Password
+sudo defaults write /Library/Preferences/com.apple.loginwindow autoLoginUser autologin
 ```
 
 #### ファイル作成
