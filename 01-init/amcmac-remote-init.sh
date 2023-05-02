@@ -3,7 +3,16 @@
 afplay /System/Library/Sounds/Blow.aiff
 
 # turn and keep display ON for a while
-caffeinate -d -u -t 600
+
+caffeinate -d -i -u -t 5
+osascript << EOF
+on run
+    tell application "System Events"
+        delay 0.5
+        keystroke return
+    end tell
+end run
+EOF
 
 # press Enter key for turning display ON
 press_enter() {
