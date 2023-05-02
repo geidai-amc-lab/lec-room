@@ -11,6 +11,7 @@ AMC演習室PCを管理するためのスクリプトなどを置いていくリ
 #### DeepFreeze解除
 ```
 /Library/Zool/sbin/df_disable.sh
+reboot
 ```
 
 #### DeepFreeze保護 
