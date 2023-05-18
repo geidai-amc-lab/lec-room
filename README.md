@@ -90,6 +90,6 @@ chmod u+w $target
 curl -fsSL $resource/amcmac-init.sh --output $target/amcmac-init.sh
 ```
 
-pmset -g
-
+sudo pmset repeat shutdown MTWRFSU 20:00:00
+pmset -g sched
 
