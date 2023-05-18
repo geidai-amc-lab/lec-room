@@ -90,4 +90,6 @@ chmod u+w $target
 curl -fsSL $resource/amcmac-init.sh --output $target/amcmac-init.sh
 ```
 
+pmset -g
+
 
