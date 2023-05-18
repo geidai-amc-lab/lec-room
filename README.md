@@ -90,4 +90,21 @@ chmod u+w $target
 curl -fsSL $resource/amcmac-init.sh --output $target/amcmac-init.sh
 ```
 
+指定時刻に自動終了
+```
+sudo pmset repeat shutdown MTWRFSU 20:00:00
+pmset -g sched
+```
 
+ディスプレイを叩き起こす
+```
+caffeinate -d -i -u -t 5
+osascript << EOF
+on run
+    tell application "System Events"
+        delay 0.5
+        keystroke return
+    end tell
+end run
+EOF
+```

@@ -16,8 +16,7 @@ on run
 end run
 EOF
 
-caffeinate -d -i -u -t 5
-
+caffeinate -d -i -u -t 3600 &>/dev/null &
 osascript << EOF
 on run
     tell application "System Events"
