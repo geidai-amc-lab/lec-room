@@ -108,3 +108,10 @@ on run
 end run
 EOF
 ```
+
+```
+defaults write com.apple.controlcenter "NSStatusItem Visible Sound" -bool true
+defaults delete com.apple.controlcenter "NSStatusItem Visible Sound"
+
+defaults write com.apple.controlcenter "NSStatusItem Visible AirDropModule" -bool true
+```
