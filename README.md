@@ -86,6 +86,23 @@ end run
 EOF
 ```
 
+ログイン画面表示
+```
+osascript -e 'tell application "System Events" to keystroke "q" using {command down, control down}'
+sleep 10
+caffeinate -d -i -u -t 500
+osascript << EOF
+on run
+    tell application "System Events"
+        delay 0.5
+        keystroke " "
+    end tell
+end run
+EOF
+```
+
+
+
 ```
 #!/bin/bash
 
