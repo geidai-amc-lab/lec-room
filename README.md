@@ -56,6 +56,18 @@ EOF
 ```
 
 ```
+PASS=""
+
+osascript <<EOF
+tell application "System Events"
+  keystroke "${PASS}"
+  delay 0.5
+  keystroke return
+end tell
+EOF
+```
+
+```
 #!/bin/bash
 
 run_osascript() {
