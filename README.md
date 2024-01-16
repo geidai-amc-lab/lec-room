@@ -55,6 +55,11 @@ end tell
 EOF
 ```
 
+プライバシーとセキュリティ
+```
+open "x-apple.systempreferences:com.apple.preference.security"
+```
+
 ```
 #!/bin/bash
 
