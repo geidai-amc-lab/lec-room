@@ -1,6 +1,7 @@
 #!/bin/bash
 
 afplay /System/Library/Sounds/Blow.aiff
+caffeinate -d -i -u -t 3600 &>/dev/null &
 
 # turn and keep display ON for a while
 osascript << EOF
@@ -16,7 +17,6 @@ on run
 end run
 EOF
 
-caffeinate -d -i -u -t 3600 &>/dev/null &
 osascript << EOF
 on run
     tell application "System Events"
