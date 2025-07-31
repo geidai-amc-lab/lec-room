@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 ### 設定部分 ###
-SHARE_URL="smb://your.server.example/shared"  # ← 実際の共有先に書き換える
+SHARE_URL="smb://172.16.1.23/shared"  # ← 実際の共有先に書き換える
 MOUNT_POINT="/Volumes/shared"
 CAFFEINATE_DURATION=3600  # 秒
 
