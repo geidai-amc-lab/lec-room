@@ -18,6 +18,8 @@ notify() {
   osascript -e "display notification \"${message//\"/\\\"}\" with title \"${title//\"/\\\"}\""
 }
 
+ifconfig | grep 'inet ' | awk '{print $2}' | pbcopy
+
 ### 1. 音とスリープ防止 ###
 afplay /System/Library/Sounds/Blow.aiff &
 
