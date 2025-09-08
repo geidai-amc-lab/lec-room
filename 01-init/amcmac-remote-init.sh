@@ -18,7 +18,7 @@ notify() {
   osascript -e "display notification \"${message//\"/\\\"}\" with title \"${title//\"/\\\"}\""
 }
 
-mkdir -p ~/Library/Preferences && printf "[default]\nsigning_required=no\n" > ~/Library/Preferences/nsmb.conf && echo "設定を保存しました。再起動してください。"
+mkdir -p ~/Library/Preferences && printf "[default]\nsigning_required=no\nsmb_neg=smb3_only\n" > ~/Library/Preferences/nsmb.conf && echo "設定を保存しました。再起動してください。"
 ifconfig | grep 'inet ' | awk '{print $2}' | pbcopy
 
 ### 1. 音とスリープ防止 ###
