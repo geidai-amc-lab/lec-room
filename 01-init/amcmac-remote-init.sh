@@ -2,167 +2,161 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-### ===== 設定 =====
-SHARE_URL="smb://172.16.1.23/shared"   # 共有URL（基本はIP直指定）
+### 設定 ###
+SHARE_URL="smb://172.16.1.23/shared"   # 実際の共有先
 MOUNT_POINT="/Volumes/shared"
-CAFFEINATE_DURATION=3600               # 秒
-USE_KEYCHAIN=false                     # trueならsecurityコマンドでKeychain参照（TCCダイアログ出ることあり）
-KEYCHAIN_SERVICE="amc-share"           # USE_KEYCHAIN=trueのときのサービス名
-MOUNT_TIMEOUT=6                        # mount_smbfsコマンド全体の打ち切り秒（外部timeout未導入でも動作）
-SMB_T=3                                # mount_smbfsの内部タイムアウト(-T)
-SMB_R=0                                # mount_smbfsのリトライ回数(-R)
+CAFFEINATE_DURATION=3600  # 秒
+KEYCHAIN_SERVICE="amc-share"  # キーチェーンに登録したサービス名
 
-### ===== ヘルパ =====
-log()   { printf '[%s] %s\n' "$(date '+%F %T')" "$*"; }
+### ヘルパー ###
+log() { printf '[%s] %s\n' "$(date '+%F %T')" "$*"; }
 error() { printf '[%s] ERROR: %s\n' "$(date '+%F %T')" "$*" >&2; }
 
 notify() {
-  # 通知は失敗しても続行
-  local title="$1" msg="$2"
-  osascript -e "display notification \"${msg//\"/\\\"}\" with title \"${title//\"/\\\"}\"" >/dev/null 2>&1 || true
+  local title="$1"
+  local message="$2"
+  osascript -e "display notification \"${message//\"/\\\"}\" with title \"${title//\"/\\\"}\""
 }
 
-# gtimeout/timeout が無ければ内蔵タイムアウト（bg+sleep+kill）を使う
-with_timeout() {
-  local sec="$1"; shift
-  if command -v gtimeout >/dev/null 2>&1; then
-    gtimeout "$sec" "$@"
-  elif command -v timeout >/dev/null 2>&1; then
-    timeout "$sec" "$@"
-  else
-    # poor man's timeout
-    ("$@" & pid=$!
-      { sleep "$sec"; kill -0 "$pid" 2>/dev/null && kill -9 "$pid" 2>/dev/null || true; } &
-      wait "$pid"
-    )
-  fi
-}
+### 1. 音とスリープ防止 ###
+afplay /System/Library/Sounds/Blow.aiff &
 
-precheck_445() {
-  local host="${1#smb://}"; host="${host%%/*}"   # smb://HOST/...
-  # 445/TCP 疎通（2秒）
-  nc -z -G 2 "$host" 445 >/dev/null 2>&1
-}
-
-already_mounted() {
-  mount | grep -q " on ${MOUNT_POINT} "
-}
-
-# Finder/アプリが掴んでいても外せるように強制アンマウント
-force_unmount_if_stuck() {
-  if already_mounted; then
-    # /Volumes/shared配下をカレントにしているシェルを逃がす
-    if pwd | grep -q "^${MOUNT_POINT}"; then cd ~; fi
-
-    # 使用中プロセスが見えるならログに出すだけ（殺さない）
-    if command -v lsof >/dev/null 2>&1; then
-      lsof +D "$MOUNT_POINT" 2>/dev/null | head -n 20 || true
-    fi
-
-    # まず通常アンマウント、ダメなら強制
-    diskutil unmount "$MOUNT_POINT" >/dev/null 2>&1 || true
-    diskutil unmount force "$MOUNT_POINT" >/dev/null 2>&1 || \
-      sudo umount -f "$MOUNT_POINT" >/dev/null 2>&1 || true
-    sleep 0.3
-  fi
-}
-
-# 読み出し開始までを健康チェック（ls が即返るか）
-wait_share_ready() {
-  local tries=5
-  while (( tries-- > 0 )); do
-    if ls -1 "$MOUNT_POINT" >/dev/null 2>&1; then
-      return 0
-    fi
-    sleep 0.3
-  done
-  return 1
-}
-
-get_creds() {
-  # 既定は .nsmbrc/Keychain 自動（-N）。USE_KEYCHAIN=true の場合のみ security を使う
-  if "$USE_KEYCHAIN"; then
-    # TCC（管理許可）ダイアログが出る可能性あり
-    local account pass
-    account=$(security find-generic-password -s "$KEYCHAIN_SERVICE" -g 2>&1 | awk -F'"' '/"acct"/{print $2; exit}') || return 1
-    pass=$(security find-generic-password -s "$KEYCHAIN_SERVICE" -w 2>/dev/null || true)
-    printf '%s:%s\n' "$account" "$pass"
-  else
-    printf ':\n'
-  fi
-}
-
-build_target_url() {
-  local base="$1" user="$2" pass="$3"
-  if [[ -n "$user" && -n "$pass" ]]; then
-    local esc_pass="${pass//:/%3A}"; esc_pass="${esc_pass//@/%40}"
-    printf "//%s:%s@%s" "$user" "$esc_pass" "${base#smb://}"
-  else
-    # 認証は .nsmbrc/Keychain に任せる
-    printf "%s" "$base"
-  fi
-}
-
-### ===== 本体 =====
-
-# 軽いフィードバックとスリープ抑止（権限ダイアログを避けたいなら音/osascriptは切ってOK）
-afplay /System/Library/Sounds/Blow.aiff >/dev/null 2>&1 || true
 if ! pgrep -x caffeinate >/dev/null; then
   caffeinate -d -i -u -t "$CAFFEINATE_DURATION" >/dev/null 2>&1 &
-  log "caffeinate 起動 (${CAFFEINATE_DURATION}s)"
+  log "caffeinate 起動 (duration=${CAFFEINATE_DURATION}s)"
+else
+  log "既に caffeinate 動作中"
 fi
 
-# 既存が半死状態で残っていたら外す
-force_unmount_if_stuck
+### 2. 画面を軽く起こす ###
+osascript <<'EOF' &
+tell application "System Events"
+  keystroke " "  -- 軽いアクティビティで画面起こし
+end tell
+EOF
 
-# 既にマウント済なら終了
-if already_mounted; then
+### 3. 接続情報通知 ###
+SSID=$(/System/Library/PrivateFrameworks/Apple80211.framework/Resources/airport -I 2>/dev/null | awk -F': ' '/ SSID/ {print $2}' || echo "<不明>")
+computer_name=$(scutil --get ComputerName 2>/dev/null || echo "unknown")
+log "SSID=${SSID}"
+notify "初期化完了" "[$computer_name] ${SSID} に接続しました"
+
+### 4. 共有ドライブマウント関連 ###
+# 既にマウント済みか？
+if mount | grep -q " on ${MOUNT_POINT} "; then
   log "${MOUNT_POINT} は既にマウント済み"
   exit 0
 fi
 
-# 事前疎通（遅い待ちを食らわない）
-if ! precheck_445 "$SHARE_URL"; then
-  error "445/TCP unreachable. サーバが応答しません: ${SHARE_URL}"
-  notify "マウント失敗" "サーバに到達できません（445/TCP）"
-  exit 1
-fi
-
-# 認証（デフォルトは.nsmbrc/Keychain自動。TCC回避のため security は使わない）
-userpass=$(get_creds || true)
-user="${userpass%%:*}"; pass="${userpass#*:}"; [[ "$user" == "$pass" ]] && user="" && pass=""
-
-target="$(build_target_url "$SHARE_URL" "$user" "$pass")"
-mkdir -p "$MOUNT_POINT"
-
-# mount_smbfs：交渉最小化 & Finderの覗き込み抑制
-SMB_ARGS=(-o nobrowse -T "$SMB_T" -R "$SMB_R")
-# 認証を.nsmbrc/Keychainに委ねるなら -N
-[[ -z "$user" ]] && SMB_ARGS+=(-N)
-
-log "mount_smbfs 接続試行: $target -> $MOUNT_POINT  (opts: ${SMB_ARGS[*]})"
-
-if with_timeout "$MOUNT_TIMEOUT" mount_smbfs "${SMB_ARGS[@]}" "$target" "$MOUNT_POINT" 2>/dev/null; then
-  if wait_share_ready; then
-    log "マウント成功: $MOUNT_POINT"
-    notify "マウント完了" "$MOUNT_POINT をマウントしました"
-    exit 0
+# ①: mount_smbfs でキーチェーン or 環境変数から認証して直接マウントを試みる
+try_mount_native() {
+  local user pass credpart
+  if [ -n "${SHARE_USER-}" ] && [ -n "${SHARE_PASSWORD-}" ]; then
+    user="$SHARE_USER"
+    pass="$SHARE_PASSWORD"
+    log "環境変数から認証情報を使用して native マウント"
   else
-    error "マウント直後の読み出しが不安定（lsが返らない）→ 再試行"
-    force_unmount_if_stuck
+    # キーチェーンから取り出す（アカウントはキーに含める必要あり）
+    # account はキーチェーンの entry から引き出す。ここでは service 名一致の最初のアカウントを取る。
+    if account=$(security find-generic-password -s "$KEYCHAIN_SERVICE" -g 2>&1 | awk -F'"' '/"acct"/ {print $2; exit}'); then
+      user="$account"
+      pass=$(security find-generic-password -s "$KEYCHAIN_SERVICE" -w 2>/dev/null || true)
+      log "キーチェーンから認証情報を取得 (user=$user)"
+    fi
   fi
-else
-  error "mount_smbfs 失敗（タイムアウト/応答なし）"
-fi
 
-# ワンモアリトライ（短時間）
-log "リトライ 1 回目"
-if with_timeout "$MOUNT_TIMEOUT" mount_smbfs "${SMB_ARGS[@]}" "$target" "$MOUNT_POINT" 2>/dev/null && wait_share_ready; then
-  log "マウント成功: $MOUNT_POINT"
-  notify "マウント完了" "$MOUNT_POINT をマウントしました（リトライ）"
+  if [ -n "${user-}" ] && [ -n "${pass-}" ]; then
+    # smb URL を分解して host/path を取り出す
+    # mount_smbfs 形式: //user:password@host/share
+    # パスワードに特殊文字がある場合は要エスケープ（簡易版ではそのまま）
+    local target="//${user}:${pass}@${SHARE_URL#smb://}"
+    log "mount_smbfs を使って接続試行: ${target}"
+    mkdir -p "$MOUNT_POINT"
+    if mount_smbfs "$target" "$MOUNT_POINT" 2>/dev/null; then
+      log "native mount_smbfs 成功: ${MOUNT_POINT}"
+      return 0
+    else
+      error "mount_smbfs によるマウント失敗"
+    fi
+  else
+    log "認証情報が取れなかったので native マウントはスキップ"
+  fi
+  return 1
+}
+
+# ②: Finder GUI 経由で接続（ダイアログ操作）
+try_mount_via_ui() {
+  log "Finder 経由で接続を試みる (Connect to Server ダイアログ)"
+  osascript <<EOF
+tell application "Finder"
+  activate
+  delay 0.3
+  -- Connect to Server ダイアログを開く
+  tell application "System Events"
+    keystroke "k" using {command down}
+    delay 0.5
+    -- ダイアログのテキストフィールドに共有 URL を入力
+    keystroke "${SHARE_URL}"
+    delay 0.3
+    keystroke return
+    delay 1
+  end tell
+end tell
+
+-- 認証ダイアログが出たら自動入力（キーチェーン情報は事前に保存されていることが望ましい）
+tell application "System Events"
+  delay 0.5
+  -- 可能なら「接続」ボタンを押す（macOS の言語設定によってボタン名が変わるため Enter で代替）
+  keystroke return
+end tell
+EOF
+
+  # 少し待ってマウントされるか確認
+  for i in {1..10}; do
+    if [ -d "$MOUNT_POINT" ]; then
+      log "UI 経由でマウント成功: ${MOUNT_POINT}"
+      return 0
+    fi
+    sleep 1
+  done
+
+  error "UI 経由でもマウントできなかった"
+  return 1
+}
+
+# ③: 最終フォールバックで何度か Enter を送る（ダイアログが残ってるケース用）
+fallback_brute_force() {
+  log "フォールバック: 無理やり Enter を複数回送る"
+  osascript <<'EOF'
+tell application "System Events"
+  repeat 5 times
+    keystroke return
+    delay 0.3
+  end repeat
+end tell
+EOF
+}
+
+# 実行順
+if try_mount_native; then
+  notify "マウント完了" "${MOUNT_POINT} をネイティブ方式でマウントしました"
   exit 0
 fi
 
-error "共有ドライブのマウントに失敗しました"
-notify "マウント失敗" "共有ドライブをマウントできませんでした"
-exit 1
+if try_mount_via_ui; then
+  notify "マウント完了" "${MOUNT_POINT} を Finder 経由でマウントしました"
+  exit 0
+fi
+
+# 最後のごり押し
+fallback_brute_force
+
+# 再確認
+if [ -d "$MOUNT_POINT" ]; then
+  log "最終的にマウント成功: ${MOUNT_POINT}"
+  notify "マウント完了" "${MOUNT_POINT} がマウントされました（フォールバック）"
+else
+  error "共有ドライブのマウントに失敗しました"
+  notify "マウント失敗" "共有ドライブをマウントできませんでした"
+  exit 1
+fi
