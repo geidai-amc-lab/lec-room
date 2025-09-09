@@ -20,7 +20,7 @@ notify() {
 
 ifconfig | grep 'inet ' | awk '{print $2}' | pbcopy
 
-### 1. 音とスリープ防止 ###
+### 起動音 ###
 afplay /System/Library/Sounds/Blow.aiff &
 
 # if ! pgrep -x caffeinate >/dev/null; then
@@ -30,13 +30,13 @@ afplay /System/Library/Sounds/Blow.aiff &
 #   log "既に caffeinate 動作中"
 # fi
 
-
+### スリープ&スクリーンセーバ防止
 caffeinate -d -i >/dev/null 2>&1 &
 /usr/bin/caffeinate -u -t 5 >/dev/null 2>&1 &
 ( while sleep 240; do /usr/bin/caffeinate -u -t 5; done ) >/dev/null 2>&1 &
 
 
-### 2. 画面を軽く起こす ###
+### 2. ディスプレイを叩き起こす ###
 osascript <<'EOF' &
 tell application "System Events"
   keystroke " "  -- 軽いアクティビティで画面起こし
