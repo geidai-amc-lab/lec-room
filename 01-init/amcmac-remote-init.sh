@@ -18,19 +18,23 @@ notify() {
   osascript -e "display notification \"${message//\"/\\\"}\" with title \"${title//\"/\\\"}\""
 }
 
-rm -rf ~/Library/Preferences/nsmb.conf
-#mkdir -p ~/Library/Preferences && printf "[default]\nsigning_required=no\nsmb_neg=smb2_only\n" > ~/Library/Preferences/nsmb.conf && echo "設定を保存しました。再起動してください。"
 ifconfig | grep 'inet ' | awk '{print $2}' | pbcopy
 
 ### 1. 音とスリープ防止 ###
 afplay /System/Library/Sounds/Blow.aiff &
 
-if ! pgrep -x caffeinate >/dev/null; then
-  caffeinate -d -i -u -t "$CAFFEINATE_DURATION" >/dev/null 2>&1 &
-  log "caffeinate 起動 (duration=${CAFFEINATE_DURATION}s)"
-else
-  log "既に caffeinate 動作中"
-fi
+# if ! pgrep -x caffeinate >/dev/null; then
+#   caffeinate -d -i -u -t "$CAFFEINATE_DURATION" >/dev/null 2>&1 &
+#   log "caffeinate 起動 (duration=${CAFFEINATE_DURATION}s)"
+# else
+#   log "既に caffeinate 動作中"
+# fi
+
+
+caffeinate -d -i >/dev/null 2>&1 &
+/usr/bin/caffeinate -u -t 5 >/dev/null 2>&1 &
+( while sleep 240; do /usr/bin/caffeinate -u -t 5; done ) >/dev/null 2>&1 &
+
 
 ### 2. 画面を軽く起こす ###
 osascript <<'EOF' &
