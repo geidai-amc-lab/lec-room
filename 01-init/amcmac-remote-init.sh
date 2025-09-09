@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-### 設定 ###
+### 共有ドライブ設定 ###
 SHARE_URL="smb://172.16.1.23/shared"   # 実際の共有先
 MOUNT_POINT="/Volumes/shared"
 CAFFEINATE_DURATION=3600  # 秒
@@ -20,17 +20,10 @@ notify() {
 
 ifconfig | grep 'inet ' | awk '{print $2}' | pbcopy
 
-### 起動音 ###
+### 起動音を鳴らす ###
 afplay /System/Library/Sounds/Blow.aiff &
 
-# if ! pgrep -x caffeinate >/dev/null; then
-#   caffeinate -d -i -u -t "$CAFFEINATE_DURATION" >/dev/null 2>&1 &
-#   log "caffeinate 起動 (duration=${CAFFEINATE_DURATION}s)"
-# else
-#   log "既に caffeinate 動作中"
-# fi
-
-### スリープ&スクリーンセーバ防止
+### 【重要】スリープ防止 & スクリーンセーバ防止
 caffeinate -d -i >/dev/null 2>&1 &
 /usr/bin/caffeinate -u -t 5 >/dev/null 2>&1 &
 ( while sleep 240; do /usr/bin/caffeinate -u -t 5; done ) >/dev/null 2>&1 &
